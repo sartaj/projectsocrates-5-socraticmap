@@ -10,8 +10,8 @@ var server = deployd({
     port: 61370,
     name: 'heroku_app25276838',
     credentials: {
-      username: 'heroku_app25276838',
-      password: 'm0ndbl33t'
+      username: 'dbuser',
+      password: 'dbuser'
     }
   }
 });
