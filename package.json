@@ -7,7 +7,7 @@
   "author": "You!",
   "contributors": [],
   "dependencies": {
-    "deployd": ">= 0"
+    "deployd": "latest"
   },
   "scripts": {
     "start": "node server"
