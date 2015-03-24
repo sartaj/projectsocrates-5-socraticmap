@@ -1,10 +1,12 @@
 // require deployd
 var deployd = require('deployd');
 
+var PORT = process.env.PORT || 5000;
 // configure database etc. 
 var server = deployd({
-  port: process.env.PORT || 5000,
-  env: 'production',
+  port: PORT,
+  env: 'development',
+  // env: 'production',
   db: {
     host: 'ds061370.mongolab.com',
     port: 61370,
@@ -24,7 +26,7 @@ server.listen();
 
 // debug
 server.on('listening', function() {
-  console.log("Server is listening on port: " + process.env.PORT);
+  console.log("Server is listening on port: " + PORT);
 });
 
 // Deployd requires this

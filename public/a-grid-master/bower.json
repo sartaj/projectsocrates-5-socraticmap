@@ -1,0 +1,23 @@
+{
+  "name": "a-grid",
+  "version": "0.0.1",
+  "homepage": "https://github.com/sartaj/a-grid",
+  "authors": [
+    "Sartaj"
+  ],
+  "description": "A simplified grid web component with no library dependencies",
+  "main": "a-grid.html",
+  "moduleType": [
+    "amd",
+    "es6",
+    "globals"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ]
+}

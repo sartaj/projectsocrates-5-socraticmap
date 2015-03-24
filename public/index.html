@@ -1,36 +1,139 @@
-<!DOCTYPE html>
-<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
-<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
-<!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
-<!--[if gt IE 8]><!--> <html class="no-js"> <!--<![endif]-->
-    <head>
-        <meta charset="utf-8">
-        <meta http-equiv="X-UA-Compatible" content="IE=edge">
-        <title></title>
-        <meta name="description" content="">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
+<html>
+<head>
+  <title>Focused View</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/webcomponentsjs/0.5.5/webcomponents-lite.min.js">
+  </script>
+  <link rel="import" href="a-grid-master/src/a-grid.html">
+  <link rel="stylesheet" href="a-grid-master/src/a-grid.css">
+</head>
+<body>
 
-        <!-- Place favicon.ico and apple-touch-icon.png in the root directory -->
-    </head>
-    <body>
-        <!--[if lt IE 7]>
-            <p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
-        <![endif]-->
+  <style>
+    body {
+      background: rgb(255, 233, 203);
+    }
+    body, input {
+      color: rgba(0,0,0,0.7);
+    }
 
-        <!-- Add your site or application content here -->
-        <p>Hello world! This is HTML5 Boilerplate.</p>
+    .input {
+      display: inline;
+    }
+    .input {
+      font-family: "Helvetica Neue";
+      font-weight: bold;
+      font-size: 4vmax;
+      background: transparent;
+      border: none;
+    }
+    img {
+      display:inline;
+      width: 100px;
+    }
+  </style>
+    <div style="position:absolute;top:0;left:0;width:100%;padding-top:10rem  ">
+      <a-grid fullheight align="center top">
 
-        <script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
-        <script>window.jQuery || document.write('<script src="js/vendor/jquery-1.10.2.min.js"><\/script>')</script>
+        <a-grid col="10">
+          <input type="text" id="goal" name="goal" class="input" placeholder="Goal" >
+        </a-grid>
 
-        <!-- Google Analytics: change UA-XXXXX-X to be your site's ID. -->
-        <script>
-            (function(b,o,i,l,e,r){b.GoogleAnalyticsObject=l;b[l]||(b[l]=
-            function(){(b[l].q=b[l].q||[]).push(arguments)});b[l].l=+new Date;
-            e=o.createElement(i);r=o.getElementsByTagName(i)[0];
-            e.src='//www.google-analytics.com/analytics.js';
-            r.parentNode.insertBefore(e,r)}(window,document,'script','ga'));
-            ga('create','UA-XXXXX-X');ga('send','pageview');
-        </script>
-    </body>
+        <a-grid col="11">
+          <br /><br /><br />
+          <img src="http://vector-magz.com/wp-content/uploads/2013/09/curved-arrow-clip-art3.png" style="width:180px;-webkit-transform:rotate(240deg)">
+        </a-grid>
+
+      </a-grid>
+    </div>
+    <a-grid fullheight align="center">
+      <a-grid col="8">
+        <a-grid col="12" >
+          <input type="text" id="focus" name="actionInput" class="input" placeholder="Focus" >
+        </a-grid>
+        <a-grid col="12" >
+          <span class="input" id="time" style="font-weight:300"></span>
+        </a-grid>
+      </a-grid>
+    </a-grid>
+
+    <script>
+
+      // Force blur
+      window.addEventListener('keyup', function(e) {
+        if (e.keyCode === 27)  { // Escape
+          document.activeElement.blur(); // Force blur
+        }
+      });
+
+      var inputs = document.querySelectorAll('input.input');
+      var $goal = document.getElementById('goal'); 
+      var $focus = document.getElementById('focus'); 
+
+      for(var x=0; x < inputs.length; x++){
+
+        input = inputs[x];
+        
+        input.addEventListener('readyCallback', setSizeToValue)
+        
+        input.addEventListener('keydown', setSizeToValue);
+
+        input.addEventListener('keyup', saveToLocalStorage);
+
+        try {
+          var storage = JSON.parse(localStorage.getItem('storage'));
+
+          $goal.value = storage.goal;
+          $focus.value = storage.focus;
+
+        } catch(e){}
+
+        input.dispatchEvent(new Event('readyCallback'));
+
+        function setSizeToValue() {
+          this.size = this.value.length || input.placeholder.length;
+        }
+
+        function saveToLocalStorage() {
+          var storage = {
+            focus: $focus.value,
+            goal: $goal.value
+          };
+          localStorage.setItem('storage', JSON.stringify(storage));
+        }
+
+      };
+
+      console.log(inputs);
+    </script>
+
+
+
+<script>
+
+  function checkTime(i) {
+      if (i < 10) {
+          i = "0" + i;
+      }
+      return i;
+  }
+
+  function startTime() {
+      var today = new Date();
+      var h = today.getHours();
+      var m = today.getMinutes();
+      var s = today.getSeconds();
+      // add a zero in front of numbers<10
+      m = checkTime(m);
+      s = checkTime(s);
+      document.getElementById('time').innerHTML = h + ":" + m + ":" + s;
+      t = setTimeout(function () {
+          startTime()
+      }, 500);
+  }
+  startTime();
+
+</script>
+
+
+</body>
 </html>
