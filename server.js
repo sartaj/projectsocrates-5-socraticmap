@@ -4,8 +4,7 @@ var deployd = require('deployd');
 var PORT = process.env.PORT || 5000;
 // configure database etc. 
 var server = deployd({
-  port: PORT,
-  // env: 'development',
+  port: process.env.PORT || 5000,
   env: 'production',
   db: {
     host: 'ds061370.mongolab.com',
