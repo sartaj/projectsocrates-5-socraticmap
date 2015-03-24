@@ -13,8 +13,8 @@
     "start": "node server"
   },
   "engines": {
-    "node": "0.8.x",
-    "npm":  "1.2.x"
+    "node": "0.12.x",
+    "npm":  "2.7.3"
   },
   "license": "MIT"
 }
