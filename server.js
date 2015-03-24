@@ -5,8 +5,8 @@ var PORT = process.env.PORT || 5000;
 // configure database etc. 
 var server = deployd({
   port: PORT,
-  env: 'development',
-  // env: 'production',
+  // env: 'development',
+  env: 'production',
   db: {
     host: 'ds061370.mongolab.com',
     port: 61370,
