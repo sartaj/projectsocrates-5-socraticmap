@@ -1,6 +1,6 @@
 <html>
 <head>
-  <title>Focused View</title>
+  <title>Socratic </title>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/webcomponentsjs/0.5.5/webcomponents-lite.min.js">
   </script>
   <link rel="import" href="a-grid-master/src/a-grid.html">
@@ -22,6 +22,7 @@
     .input {
       font-family: "Helvetica Neue";
       font-weight: bold;
+      width: 100%;
       font-size: 4vmax;
       background: transparent;
       border: none;
@@ -56,6 +57,28 @@
       </a-grid>
     </a-grid>
 
+    <script src="lib/jquery.min.js"></script>
+    <script>
+      var socrates = window.socrates = {};
+      socrates.STORES = {};
+
+      window.ItemsStore = socrates.STORES.items = {};
+
+      ItemsStore.__actions = {};
+      
+      ItemsStore.item = {
+        id: String,
+        goals: [],
+        focus: []
+      };
+
+      ItemsStore.__actions['ITEM:UPDATE'] = function (item) {
+        ItemsStore.item = item;
+        console.log(ItemsStore.item);
+      };
+
+    </script>
+
     <script>
 
       // Force blur
@@ -66,73 +89,187 @@
       });
 
       var inputs = document.querySelectorAll('input.input');
+
       var $goal = document.getElementById('goal'); 
-      var $focus = document.getElementById('focus'); 
+      var $focus = document.getElementById('focus');
 
       for(var x=0; x < inputs.length; x++){
 
         input = inputs[x];
         
-        input.addEventListener('readyCallback', setSizeToValue)
-        
-        input.addEventListener('keydown', setSizeToValue);
+        // input.addEventListener('readyCallback', setSizeToValue);
 
-        input.addEventListener('keyup', saveToLocalStorage);
+        // input.addEventListener('keydown', setSizeToValue);
 
-        try {
-          var storage = JSON.parse(localStorage.getItem('storage'));
-
-          $goal.value = storage.goal;
-          $focus.value = storage.focus;
-
-        } catch(e){}
+        input.addEventListener('keyup', updateItemStore);
 
         input.dispatchEvent(new Event('readyCallback'));
 
-        function setSizeToValue() {
-          this.size = this.value.length || input.placeholder.length;
-        }
+      }
 
-        function saveToLocalStorage() {
-          var storage = {
-            focus: $focus.value,
-            goal: $goal.value
-          };
-          localStorage.setItem('storage', JSON.stringify(storage));
-        }
+      Object.observe(ItemsStore, function () {
+        
+        console.log(ItemsStore);
+        try {
+          $goal.value = ItemsStore.item.goals[0].text;
+          $focus.value = ItemsStore.item.focus[0].text;           
+        }catch(e) { console.warn(e)}
 
-      };
+      });
 
-      console.log(inputs);
+      function updateItemStore() {
+
+        var item = {
+          focus: [{text: $focus.value}],
+          goals: [{text: $goal.value}]
+        };
+
+        ItemsStore.__actions['ITEM:UPDATE'](item);
+
+      }
+
+      // function setSizeToValue() {
+      //   this.size = this.value.length || input.placeholder.length;
+      // }
+
     </script>
 
+    <script src="dpd.js"></script>
+    <script src="lib/asq.js"></script>
+    <script>
 
+      var itemId;
 
-<script>
+      Object.observe(ItemsStore, function () {
+        console.log("OBSERVED")
+        saveData(ItemsStore.item);
+      });
 
-  function checkTime(i) {
-      if (i < 10) {
-          i = "0" + i;
+      readyCallback();
+
+      function readyCallback() {
+        ASQ(getListOfItems)
+          .then(getItem)
+          .then(updateItemStore)
       }
-      return i;
-  }
 
-  function startTime() {
-      var today = new Date();
-      var h = today.getHours();
-      var m = today.getMinutes();
-      var s = today.getSeconds();
-      // add a zero in front of numbers<10
-      m = checkTime(m);
-      s = checkTime(s);
-      document.getElementById('time').innerHTML = h + ":" + m + ":" + s;
-      t = setTimeout(function () {
-          startTime()
-      }, 500);
-  }
-  startTime();
+      function updateItemStore(done, msg) {
+        ItemsStore.__actions['ITEM:UPDATE'](msg);
+        console.log(ItemsStore);
+      }
 
-</script>
+      function getLocalStorage() {
+
+        try {
+
+          var storage = JSON.parse(localStorage.getItem('storage'));
+
+          var item = {
+            focus: [{text: storage.focus}],
+            goals: [{text: storage.goal}]
+          };
+
+          ItemsStore.__actions['ITEM:UPDATE'](item);
+
+        } catch(e){};
+
+      }
+
+      function getListOfItems(done) {
+
+        dpd.goalfocus.get(function (result, err) {
+          if(err) return console.log(err);
+          // console.log('result', result[0].id);
+
+          if (!result.length) {
+            createItem(done);
+          } else {
+            itemId = result[0].id;
+            done(result[0].id)
+          }
+
+        });
+
+      }
+
+      function createItem(done, msg) {
+
+        dpd.goalfocus.post({}, function(result, err) {
+          if(err) return console.log(err);
+          console.log(result, result.id);
+          itemId = result.id
+          done(itemId);
+        });
+
+      }
+
+      function getItem(done, id) {
+        // console.log('id', id)
+        // msg should be an id
+        dpd.goalfocus.get(id, function(result, err) {
+          if(err) return console.log(err);
+          // console.log('getserver', result);
+          done(result);
+        });
+
+      }
+
+
+      function saveData(item) {
+        // saveToLocalStorage();
+        saveToDeployd(item);
+      }
+
+      function saveToDeployd(item) {
+        console.log("S",itemId);
+
+        if(itemId) {
+          dpd.goalfocus.put(itemId, item, function(result, err) {
+            if(err) return console.log(err);
+            console.log('result', result, result.id);
+          });
+        }
+
+      }
+
+      // function saveToLocalStorage() {
+
+      //   var storage = {
+      //     focus: $focus.value,
+      //     goal: $goal.value
+      //   };
+
+      //   localStorage.setItem('storage', JSON.stringify(storage));
+
+      // }
+
+    </script>
+
+    <script>
+
+      function checkTime(i) {
+          if (i < 10) {
+              i = "0" + i;
+          }
+          return i;
+      }
+
+      function startTime() {
+          var today = new Date();
+          var h = today.getHours();
+          var m = today.getMinutes();
+          var s = today.getSeconds();
+          // add a zero in front of numbers<10
+          m = checkTime(m);
+          s = checkTime(s);
+          document.getElementById('time').innerHTML = h + ":" + m + ":" + s;
+          t = setTimeout(function () {
+              startTime()
+          }, 500);
+      }
+      startTime();
+
+    </script>
 
 
 </body>

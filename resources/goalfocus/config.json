@@ -1,0 +1,37 @@
+{
+	"type": "Collection",
+	"properties": {
+		"permissions": {
+			"name": "permissions",
+			"type": "object",
+			"typeLabel": "object",
+			"required": false,
+			"id": "permissions",
+			"order": 0
+		},
+		"source": {
+			"name": "source",
+			"type": "object",
+			"typeLabel": "object",
+			"required": false,
+			"id": "source",
+			"order": 1
+		},
+		"goals": {
+			"name": "goals",
+			"type": "array",
+			"typeLabel": "array",
+			"required": false,
+			"id": "goals",
+			"order": 2
+		},
+		"focus": {
+			"name": "focus",
+			"type": "array",
+			"typeLabel": "array",
+			"required": false,
+			"id": "focus",
+			"order": 3
+		}
+	}
+}
