@@ -7,14 +7,18 @@
   "author": "You!",
   "contributors": [],
   "dependencies": {
-    "deployd": "latest"
+    "deployd": "latest",
+    "snyk": "^1.104.2"
   },
   "scripts": {
-    "start": "node server"
+    "start": "node server",
+    "snyk-protect": "snyk protect",
+    "prepare": "npm run snyk-protect"
   },
   "engines": {
     "node": "0.12.x",
-    "npm":  "2.7.3"
+    "npm": "2.7.3"
   },
-  "license": "MIT"
+  "license": "MIT",
+  "snyk": true
 }
